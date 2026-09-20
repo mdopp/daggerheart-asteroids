@@ -1,0 +1,20 @@
+{
+  "name": "daggerheart-asteroids",
+  "version": "1.0.0",
+  "description": "A DaggerHeart-inspired browser-based hack and slash card RPG",
+  "type": "module",
+  "scripts": {
+    "dev": "npx vite --port 8080",
+    "build": "npx vite build",
+    "start": "npx vite preview --port 8080",
+    "lint": "eslint src/",
+    "test": "npx vitest run"
+  },
+  "dependencies": {
+    "vite": "^6.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "vitest": "^3.0.0"
+  }
+}
