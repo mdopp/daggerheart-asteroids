@@ -10,7 +10,7 @@ RUN npm install --no-audit --no-fund 2>&1 | tail -1
 COPY vite.config.js ./
 COPY index.html ./
 COPY src/ ./src/
-RUN npx vite build --loglevel silent
+RUN npx vite build
 
 # Production stage — minimal runtime
 FROM node:20-alpine
