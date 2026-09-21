@@ -94,9 +94,9 @@ test('plays attack card', async ({ page }) => {
   const attackCard = page.locator('.hand-cards .card.attack').first();
   await expect(attackCard).toBeVisible({ timeout: 5000 });
   await attackCard.click();
-  // Wait for dice animation to complete (the result label gets text)
+  // Wait for dice animation to complete and result to be displayed
   const diceResult = page.locator('.dice-result-label');
-  await expect(diceResult).toHaveText(/\S/, { timeout: 5000 });
+  await expect(diceResult).toHaveText(/failure|success|triumph|botch|spectacular/, { timeout: 5000 });
 
   const logEntries = page.locator('.log-damage');
   const count = await logEntries.count();
@@ -112,6 +112,8 @@ test('shows shield on defend card', async ({ page }) => {
   const defendCard = page.locator('.hand-cards .card.defend').first();
   if (await defendCard.isVisible({ timeout: 5000 }).catch(() => false)) {
     await defendCard.click();
+    const diceResult = page.locator('.dice-result-label');
+    await expect(diceResult).toHaveText(/failure|success|triumph|botch|spectacular/, { timeout: 5000 });
     const blockLog = page.locator('.log-block');
     const count = await blockLog.count();
     expect(count).toBeGreaterThanOrEqual(1);
@@ -124,10 +126,17 @@ test('enemy attacks player', async ({ page }) => {
   const combat = page.locator('.combat');
   await expect(combat).toBeVisible({ timeout: 10000 });
 
+  // Play a card to use energy, then end turn so enemy acts
   const attackCard = page.locator('.hand-cards .card.attack').first();
   await expect(attackCard).toBeVisible({ timeout: 5000 });
   await attackCard.click();
-  await page.waitForTimeout(2000);
+  const diceResult = page.locator('.dice-result-label');
+  await expect(diceResult).toHaveText(/failure|success|triumph|botch|spectacular/, { timeout: 5000 });
+
+  // End turn → enemy attacks
+  const endBtn = page.locator('#btn-end-turn');
+  await endBtn.click();
+  await expect(page.locator('.stats-bar span').first()).toHaveText(/U2/, { timeout: 5000 });
 
   const enemyAttack = page.locator('.combat-log').locator('text=/⚠️/');
   await expect(enemyAttack).toBeVisible({ timeout: 5000 });
@@ -156,12 +165,8 @@ test('shows dice result after roll', async ({ page }) => {
   const attackCard = page.locator('.hand-cards .card.attack').first();
   await expect(attackCard).toBeVisible({ timeout: 5000 });
   await attackCard.click();
-  await page.waitForTimeout(2000);
-
   const resultLabel = page.locator('.dice-result-label');
-  await expect(resultLabel).toBeVisible();
-  const text = await resultLabel.textContent();
-  expect(text?.length > 0).toBe(true);
+  await expect(resultLabel).toHaveText(/failure|success|triumph|botch|spectacular/, { timeout: 5000 });
 });
 
 // ─── Combat Log ─────────────────────────────────────────────────────────────
@@ -238,10 +243,8 @@ test('end turn increases turn counter', async ({ page }) => {
 
   const endBtn = page.locator('#btn-end-turn');
   await endBtn.click();
-  await page.waitForTimeout(2000);
-
   const turnText = page.locator('.stats-bar span').first();
-  await expect(turnText).toContainText('U2');
+  await expect(turnText).toHaveText(/U2/, { timeout: 5000 });
 });
 
 // ─── Keyboard Controls ──────────────────────────────────────────────────────
@@ -253,10 +256,8 @@ test('keyboard e ends turn', async ({ page }) => {
   await expect(combat).toBeVisible({ timeout: 10000 });
 
   await page.keyboard.press('e');
-  await page.waitForTimeout(2000);
-
   const turnText = page.locator('.stats-bar span').first();
-  await expect(turnText).toContainText('U2');
+  await expect(turnText).toHaveText(/U2/, { timeout: 5000 });
 });
 
 // ─── Victory / Defeat ──────────────────────────────────────────────────────
