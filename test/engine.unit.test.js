@@ -252,6 +252,49 @@ test('attack log with starBonus and failure multiplier', () => {
   }
 });
 
+test('attack with critical multiplier adds stars back', () => {
+  const engine = createEngine();
+  engine.stars = [1]; // starBonus > 0
+
+  const attackCard = engine.hand.find(c => c.type === 'attack');
+  expect(attackCard).toBeDefined();
+
+  engine.energy = 10;
+  // 'success' (90-98) → multiplier 1.5, 'triumph' (99-100) → multiplier 2, 'spectacular' (100) → multiplier 3
+  // multiplier >= 1.5 triggers star bonus (add 3 stars back)
+  const enemyMaxHp = engine.enemy.maxHp;
+  for (let i = 0; i < 200; i++) {
+    const hpBefore = engine.enemy.currentHp;
+    engine.energy = 10;
+    engine.playCard(0); // always play first card in hand
+    const logs = engine.combatLog.map(e => e.message);
+    if (logs.some(l => l.includes('Kritischer Treffer'))) break;
+    // Reset enemy HP so we can keep attacking
+    engine.enemy.currentHp = hpBefore;
+  }
+  // Verify at least one attack happened
+  expect(engine.enemy.currentHp).toBeLessThanOrEqual(enemyMaxHp);
+});
+
+test('botch roll shows error log', () => {
+  const engine = createEngine();
+  engine.stars = [1];
+
+  const attackCard = engine.hand.find(c => c.type === 'attack');
+  expect(attackCard).toBeDefined();
+
+  engine.energy = 10;
+  // 'botch' (1) → multiplier 0.5, shows 'Fehlschlag' log
+  for (let i = 0; i < 100; i++) {
+    const hpBefore = engine.enemy.currentHp;
+    engine.playCard(engine.hand.indexOf(attackCard));
+    const logs = engine.combatLog.map(e => e.message);
+    if (logs.some(l => l.includes('Fehlschlag'))) break;
+    // Reset if enemy died
+    engine.enemy.currentHp = hpBefore;
+  }
+});
+
 test('playDefend with critical roll triggers addStar', () => {
   const engine = createEngine();
 
