@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.git/
+coverage/
+test-results/
+*.md
+.eslintrc*
+eslint.config.js
+.vitest*
+.env

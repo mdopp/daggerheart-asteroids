@@ -18,9 +18,24 @@ const MIME = {
   '.ico': 'image/x-icon',
 };
 
+// Security headers — applied to every response
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'SAMEORIGIN',
+  'X-XSS-Protection': '0',           // modern browsers use CSP instead
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  'X-DNS-Prefetch-Control': 'off',
+};
+
 const server = http.createServer((req, res) => {
   let url = new URL(req.url, `http://localhost:${PORT}`);
   let pathname = url.pathname;
+  
+  // Attach security headers to every response
+  for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+    res.setHeader(key, value);
+  }
 
   // Health check endpoint
   if (pathname === '/healthz' && (req.method === 'GET' || req.method === 'HEAD')) {

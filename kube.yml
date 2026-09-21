@@ -10,6 +10,12 @@ metadata:
     servicebay.healthcheck: "http://localhost:8080/"
 spec:
   restartPolicy: Always
+  # Security: run as non-root, no hostNetwork, no privilege escalation
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
   containers:
     - name: game
       image: ghcr.io/mdopp/daggerheart-asteroids:latest
@@ -17,9 +23,28 @@ spec:
         - containerPort: 8080
           hostPort: 8080
           protocol: TCP
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      startupProbe:
+        httpGet:
+          path: /
+          port: 8080
+        initialDelaySeconds: 1
+        periodSeconds: 2
+        failureThreshold: 30
       livenessProbe:
         httpGet:
           path: /
           port: 8080
         initialDelaySeconds: 2
         periodSeconds: 10
+      readinessProbe:
+        httpGet:
+          path: /healthz
+          port: 8080
+        initialDelaySeconds: 1
+        periodSeconds: 5

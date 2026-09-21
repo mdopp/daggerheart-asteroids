@@ -4,18 +4,6 @@
 import { GameEngine } from './engine.js';
 import { ENEMIES } from './game-data.js';
 
-// Game data CLASSES (from game-data.js for character select)
-const CLASS_DECK_TEMPLATE = {
-  basicStrike:  { name: 'Schlag', cost: 0, type: 'attack', value: 5, icon: '👊' },
-  basicStrike:  { name: 'Schlag', cost: 0, type: 'attack', value: 5, icon: '👊' },
-  basicStrike:  { name: 'Schlag', cost: 0, type: 'attack', value: 5, icon: '👊' },
-  basicStrike:  { name: 'Schlag', cost: 0, type: 'attack', value: 5, icon: '👊' },
-  ironWall:     { name: 'Eiserne Wand', cost: 0, type: 'defend', value: 5, icon: '🛡️' },
-  ironWall:     { name: 'Eiserne Wand', cost: 0, type: 'defend', value: 5, icon: '🛡️' },
-  ironWall:     { name: 'Eiserne Wand', cost: 0, type: 'defend', value: 5, icon: '🛡️' },
-  quickHeal:    { name: 'Schnelle Heilung', cost: 0, type: 'heal', value: 4, icon: '💚' },
-};
-
 // Build starting deck (unique cards with counts)
 function makeDeck(cards) {
   return Object.entries(cards).flatMap(([key, card]) =>
