@@ -9,15 +9,6 @@ const CLASSES = {
   rogue:   { name: 'Schurke', icon: '🗡️', desc: 'Listiger Angreifer', color: '#27ae60', hp: 28, attack: '🗡️' },
 };
 
-const ENEMY_DATA = [
-  { name: 'Schattenwolf', icon: '🐺', hp: 30, attack: '🦷' },
-  { name: 'Knocman', icon: '💀', hp: 45, attack: '💀' },
-  { name: 'Feuervogel', icon: '🦅', hp: 25, attack: '👁️' },
-  { name: 'Schleim', icon: '🟢', hp: 55, attack: '💦' },
-  { name: 'Dunkelritter', icon: '🖤', hp: 80, attack: '⚔️', isBoss: true },
-  { name: 'Drache', icon: '🐉', hp: 120, attack: '🔥', isBoss: true },
-];
-
 export class GameUI {
   constructor() {
     this.engine = new GameEngine();
