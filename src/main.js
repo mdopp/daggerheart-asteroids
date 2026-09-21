@@ -5,10 +5,47 @@ import { GameEngine } from './engine.js';
 import { ENEMIES } from './game-data.js';
 
 // Game data CLASSES (from game-data.js for character select)
+const CLASS_DECK_TEMPLATE = {
+  basicStrike:  { name: 'Schlag', cost: 0, type: 'attack', value: 5, icon: '👊' },
+  basicStrike:  { name: 'Schlag', cost: 0, type: 'attack', value: 5, icon: '👊' },
+  basicStrike:  { name: 'Schlag', cost: 0, type: 'attack', value: 5, icon: '👊' },
+  basicStrike:  { name: 'Schlag', cost: 0, type: 'attack', value: 5, icon: '👊' },
+  ironWall:     { name: 'Eiserne Wand', cost: 0, type: 'defend', value: 5, icon: '🛡️' },
+  ironWall:     { name: 'Eiserne Wand', cost: 0, type: 'defend', value: 5, icon: '🛡️' },
+  ironWall:     { name: 'Eiserne Wand', cost: 0, type: 'defend', value: 5, icon: '🛡️' },
+  quickHeal:    { name: 'Schnelle Heilung', cost: 0, type: 'heal', value: 4, icon: '💚' },
+};
+
+// Build starting deck (unique cards with counts)
+function makeDeck(cards) {
+  return Object.entries(cards).flatMap(([key, card]) =>
+    Array.from({ length: card.count || 1 }, () => ({ ...card, key }))
+  );
+}
+
+// Build starting decks for each class
+const WARRIOR_DECK = makeDeck({
+  basicStrike:  { name: 'Schlag', cost: 0, type: 'attack', value: 5, icon: '👊', count: 6 },
+  ironWall:     { name: 'Eiserne Wand', cost: 0, type: 'defend', value: 5, icon: '🛡️', count: 4 },
+  quickHeal:    { name: 'Schnelle Heilung', cost: 0, type: 'heal', value: 4, icon: '💚', count: 2 },
+});
+const MAGE_DECK = makeDeck({
+  basicStrike:  { name: 'Feuerball', cost: 0, type: 'attack', value: 6, icon: '🔥', count: 5 },
+  ironWall:     { name: 'Mantel', cost: 0, type: 'defend', value: 4, icon: '🛡️', count: 3 },
+  quickHeal:    { name: 'Lebenssaft', cost: 0, type: 'heal', value: 6, icon: '💚', count: 3 },
+  skillCard:    { name: 'Blitz', cost: 1, type: 'skill', value: 7, icon: '⚡', count: 2 },
+});
+const ROGUE_DECK = makeDeck({
+  basicStrike:  { name: 'Dolchstoß', cost: 0, type: 'attack', value: 4, icon: '🗡️', count: 6 },
+  ironWall:     { name: 'Ausweichen', cost: 0, type: 'defend', value: 3, icon: '🛡️', count: 4 },
+  quickHeal:    { name: 'Kraut', cost: 0, type: 'heal', value: 3, icon: '💚', count: 2 },
+  skillCard:    { name: 'Schatten', cost: 1, type: 'skill', value: 8, icon: '🌑', count: 2 },
+});
+
 const CLASSES = {
-  warrior: { name: 'Krieger', icon: '⚔️', desc: 'Unerschütterlicher Kämpfer', color: '#e74c3c', hp: 35, attack: '⚔️' },
-  mage:    { name: 'Magier', icon: '🔮', desc: 'Meister der Elemente', color: '#8e44ad', hp: 25, attack: '🔥' },
-  rogue:   { name: 'Schurke', icon: '🗡️', desc: 'Listiger Angreifer', color: '#27ae60', hp: 28, attack: '🗡️' },
+  warrior: { name: 'Krieger', icon: '⚔️', desc: 'Unerschütterlicher Kämpfer', color: '#e74c3c', hp: 35, attack: '⚔️', baseHp: 35, baseMana: 3, skills: ['Schwerter', 'Schild'], startingDeck: WARRIOR_DECK },
+  mage:    { name: 'Magier', icon: '🔮', desc: 'Meister der Elemente', color: '#8e44ad', hp: 25, attack: '🔥', baseHp: 25, baseMana: 3, skills: ['Feuer', 'Blitz'], startingDeck: MAGE_DECK },
+  rogue:   { name: 'Schurke', icon: '🗡️', desc: 'Listiger Angreifer', color: '#27ae60', hp: 28, attack: '🗡️', baseHp: 28, baseMana: 3, skills: ['Dolch', 'Schatten'], startingDeck: ROGUE_DECK },
 };
 
 // Expose for the bundled code
@@ -381,7 +418,7 @@ export class GameUI {
               <h3>${cls.name}</h3>
               <p class="desc">${cls.desc}</p>
               <div class="stats">
-                <span class="stat">❤️ ${cls.hp} HP</span>
+                <span class="stat">❤️ ${cls.baseHp} HP</span>
                 <span class="stat">${cls.attack} Attacke</span>
               </div>
             </div>
