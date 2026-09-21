@@ -50,5 +50,3 @@ jobs:
           context: .
           push: ${{ github.event_name == 'push' }}
           tags: ghcr.io/${{ github.repository_owner }}/daggerheart-asteroids:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
