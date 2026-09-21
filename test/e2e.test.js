@@ -26,7 +26,7 @@ test('loads title screen', async ({ page }) => {
   await expect(page.locator('.title h1')).toContainText('DAGGERHEART');
   await expect(page.locator('.title .subtitle')).toContainText('Asteroids');
   await expect(page.locator('.title-content .btn-play')).toBeVisible({ timeout: 5000 });
-  await expect(page.locator('.title .lore')).toBeVisible({ timeout: 5000 });
+  await expect(page.locator('.title-content .lore')).toBeVisible({ timeout: 5000 });
 });
 
 test('shows star field background on title', async ({ page }) => {
@@ -44,8 +44,8 @@ test('selects warrior class via play button', async ({ page }) => {
   await page.locator('.title-content .btn-play').click();
   const combat = page.locator('.combat');
   await expect(combat).toBeVisible({ timeout: 10000 });
-  await expect(page.locator('.area-name')).toContainText('Krieger');
-  await expect(page.locator('.area-icon')).toContainText('⚔️');
+  await expect(page.locator('.player-area .area-name')).toContainText('Krieger');
+  await expect(page.locator('.player-area .area-icon')).toContainText('⚔️');
 });
 
 test('selects warrior class via Enter key', async ({ page }) => {
@@ -53,7 +53,7 @@ test('selects warrior class via Enter key', async ({ page }) => {
   await page.keyboard.press('Enter');
   const combat = page.locator('.combat');
   await expect(combat).toBeVisible({ timeout: 10000 });
-  await expect(page.locator('.area-name')).toContainText('Krieger');
+  await expect(page.locator('.player-area .area-name')).toContainText('Krieger');
 });
 
 test('selects mage class', async ({ page }) => {
@@ -94,8 +94,9 @@ test('plays attack card', async ({ page }) => {
   const attackCard = page.locator('.hand-cards .card.attack').first();
   await expect(attackCard).toBeVisible({ timeout: 5000 });
   await attackCard.click();
-  // Wait for animation
-  await expect(page.locator('.dice-display')).toBeVisible({ timeout: 5000 });
+  // Wait for dice animation to complete (the result label gets text)
+  const diceResult = page.locator('.dice-result-label');
+  await expect(diceResult).toHaveText(/\S/, { timeout: 5000 });
 
   const logEntries = page.locator('.log-damage');
   const count = await logEntries.count();
