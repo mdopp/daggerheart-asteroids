@@ -3,13 +3,35 @@ name: Docker
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 permissions:
   packages: write
   contents: read
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with coverage
+        run: npx vitest run --coverage
+        env:
+          CI: true
+
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,5 +48,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
+          push: ${{ github.event_name == 'push' }}
           tags: ghcr.io/${{ github.repository_owner }}/daggerheart-asteroids:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -2,7 +2,9 @@
 // Manages game state, combat, cards, and dice mechanics
 
 export class GameEngine {
-  constructor() {
+  constructor(classes, enemies) {
+    this.classes = classes;
+    this.enemies = enemies;
     this.state = 'title'; // title, character-select, combat, victory, defeat
     this.player = null;
     this.enemy = null;
@@ -58,7 +60,7 @@ export class GameEngine {
   }
 
   initCharacter(className) {
-    const template = CLASSES[className];
+    const template = this.classes[className];
     this.player = {
       className,
       name: template.name,
@@ -97,12 +99,12 @@ export class GameEngine {
 
   startCombat() {
     // Select enemy based on wave
-    const enemyIndex = this.currentWave % (ENEMIES.length - 2); // Skip boss until later
+    const enemyIndex = this.currentWave % (this.enemies.length - 2); // Skip boss until later
     const isBossWave = this.currentWave >= 4;
-    
+
     this.enemy = {
-      ...ENEMIES[isBossWave ? ENEMIES.length - 1 : enemyIndex],
-      currentHp: ENEMIES[isBossWave ? ENEMIES.length - 1 : enemyIndex].hp,
+      ...this.enemies[isBossWave ? this.enemies.length - 1 : enemyIndex],
+      currentHp: this.enemies[isBossWave ? this.enemies.length - 1 : enemyIndex].hp,
     };
 
     // Reset combat state
@@ -183,7 +185,7 @@ export class GameEngine {
       case 'attack': {
         const baseDamage = Math.round(card.value * multiplier);
         const totalDamage = baseDamage + this.player.attack;
-        
+
         // Add star bonus
         if (starBonus > 0 && multiplier >= 1.5) {
           // Critical: add stars back

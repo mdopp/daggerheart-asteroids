@@ -22,6 +22,13 @@ const server = http.createServer((req, res) => {
   let url = new URL(req.url, `http://localhost:${PORT}`);
   let pathname = url.pathname;
 
+  // Health check endpoint
+  if (pathname === '/healthz' && (req.method === 'GET' || req.method === 'HEAD')) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'ok', uptime: process.uptime() }));
+    return;
+  }
+
   // SPA fallback: all non-file routes go to index.html
   if (!path.extname(pathname) || pathname.endsWith('/')) {
     pathname = '/index.html';

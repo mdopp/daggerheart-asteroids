@@ -2,16 +2,23 @@
 // Renders the full game UI with animations
 
 import { GameEngine } from './engine.js';
+import { ENEMIES } from './game-data.js';
 
+// Game data CLASSES (from game-data.js for character select)
 const CLASSES = {
   warrior: { name: 'Krieger', icon: '⚔️', desc: 'Unerschütterlicher Kämpfer', color: '#e74c3c', hp: 35, attack: '⚔️' },
   mage:    { name: 'Magier', icon: '🔮', desc: 'Meister der Elemente', color: '#8e44ad', hp: 25, attack: '🔥' },
   rogue:   { name: 'Schurke', icon: '🗡️', desc: 'Listiger Angreifer', color: '#27ae60', hp: 28, attack: '🗡️' },
 };
 
+// Expose for the bundled code
+window.CLASSES = CLASSES;
+window.ENEMIES = ENEMIES;
+window.gameData = { CLASSES, ENEMIES };
+
 export class GameUI {
   constructor() {
-    this.engine = new GameEngine();
+    this.engine = new GameEngine(CLASSES, ENEMIES);
     this.state = 'title';
     this.selectedClass = null;
     this.selectedCardIndex = -1;
@@ -59,7 +66,7 @@ export class GameUI {
   }
 
   restart() {
-    this.engine = new GameEngine();
+    this.engine = new GameEngine(CLASSES, ENEMIES);
     this.state = 'title';
     this.selectedClass = null;
     this.selectedCardIndex = -1;
